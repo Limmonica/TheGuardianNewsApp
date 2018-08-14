@@ -14,10 +14,6 @@ public class Article {
      */
     private String mSection;
     /**
-     * Thumbnail/image of the article
-     */
-    private int mThumbnail;
-    /**
      * Title of the article
      */
     private String mTitle;
@@ -39,17 +35,15 @@ public class Article {
      *
      * @param date      is the publishing date of the article
      * @param section   is the section the article belongs to
-     * @param thumbnail is the resource ID for the thumbnail image of the article
      * @param title     is the title of the article
      * @param author    is the author of the article
      * @param trail     is the preview of the article
      * @param url       is the url of the article
      */
-    public Article(String date, String section, int thumbnail, String title,
+    public Article(String date, String section, String title,
                    String author, String trail, String url) {
         mDate = date;
         mSection = section;
-        mThumbnail = thumbnail;
         mTitle = title;
         mAuthor = author;
         mTrail = trail;
@@ -68,13 +62,6 @@ public class Article {
      */
     public String getArticleSection() {
         return mSection;
-    }
-
-    /**
-     * @return the thumbnail of the article
-     */
-    public int getArticleThumbnail() {
-        return mThumbnail;
     }
 
     /**

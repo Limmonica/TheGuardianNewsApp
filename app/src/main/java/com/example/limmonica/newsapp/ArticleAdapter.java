@@ -10,7 +10,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.List;
@@ -60,11 +59,6 @@ public class ArticleAdapter extends ArrayAdapter<Article> {
         TextView sectionView = listItemView.findViewById(R.id.section_view);
         // Display the section of the current article in that TextView
         sectionView.setText(currentArticle.getArticleSection());
-
-        // Find the ImageView with view ID thumbnail_view
-        ImageView thumbnailView = listItemView.findViewById(R.id.thumbnail_view);
-        // Display the thumbnail of the current article in that ImageView
-        thumbnailView.setImageResource(currentArticle.getArticleThumbnail());
 
         // Find the TextView with view ID title_view
         TextView titleView = listItemView.findViewById(R.id.title_view);

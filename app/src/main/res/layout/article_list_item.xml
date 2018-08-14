@@ -40,35 +40,15 @@
 
     </LinearLayout>
 
-    <!-- THUMBNAIL & TITLE-->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
-        <ImageView
-            android:id="@+id/thumbnail_view"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_marginEnd="8dp"
-            android:layout_marginRight="8dp"
-            android:layout_weight="1"
-            android:adjustViewBounds="true"
-            android:contentDescription="@null"
-            android:scaleType="centerCrop"
-            tools:src="@drawable/test_img" />
-
+    <!-- TITLE -->
         <TextView
             android:id="@+id/title_view"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="3"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:textAllCaps="true"
             android:textSize="14sp"
             android:textStyle="bold"
             tools:text="Hackers accessing PayPal via voicemail? Security expert says it's possible" />
-
-    </LinearLayout>
 
     <!-- AUTHOR -->
     <TextView
@@ -103,5 +83,6 @@
         android:textAllCaps="true"
         android:textColor="@android:color/white"
         android:textSize="14sp"
-        android:textStyle="bold" />
+        android:textStyle="bold"
+        tools:text="Read More" />
 </LinearLayout>
