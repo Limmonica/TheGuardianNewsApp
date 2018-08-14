@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">NewsApp</string>
+    <string name="read_more">Read More</string>
+    <string name="by_author">by:</string>
+</resources>

@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <!-- DATE & SECTION -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorAccent"
+        android:orientation="horizontal"
+        android:padding="4dp">
+
+        <TextView
+            android:id="@+id/date_view"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textAllCaps="true"
+            android:textColor="@android:color/white"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            tools:text="Aug 22, 2018" />
+
+        <TextView
+            android:id="@+id/section_view"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="3"
+            android:gravity="end"
+            android:textAllCaps="true"
+            android:textColor="@android:color/white"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            tools:text="TECHNOLOGY" />
+
+    </LinearLayout>
+
+    <!-- THUMBNAIL & TITLE-->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/thumbnail_view"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginEnd="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_weight="1"
+            android:adjustViewBounds="true"
+            android:contentDescription="@null"
+            android:scaleType="centerCrop"
+            tools:src="@drawable/test_img" />
+
+        <TextView
+            android:id="@+id/title_view"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="3"
+            android:textAllCaps="true"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            tools:text="Hackers accessing PayPal via voicemail? Security expert says it's possible" />
+
+    </LinearLayout>
+
+    <!-- AUTHOR -->
+    <TextView
+        android:id="@+id/author_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="end"
+        android:textSize="12sp"
+        android:textStyle="bold|italic"
+        tools:text="by Alex Hern in Las Vegas" />
+
+    <!-- TRAIL/PREVIEW -->
+    <TextView
+        android:id="@+id/trail_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ellipsize="end"
+        android:maxLines="3"
+        android:paddingBottom="4dp"
+        android:paddingTop="4dp"
+        android:textSize="14sp"
+        tools:text="Hackers could break into voicemail systems, which have had some of the same weaknesses for decades, to access PayPal and WhatsApp accounts" />
+
+    <!-- READ MORE -->
+    <Button
+        android:id="@+id/read_more_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorAccent"
+        android:text="@string/read_more"
+        android:textAlignment="center"
+        android:textAllCaps="true"
+        android:textColor="@android:color/white"
+        android:textSize="14sp"
+        android:textStyle="bold" />
+</LinearLayout>
