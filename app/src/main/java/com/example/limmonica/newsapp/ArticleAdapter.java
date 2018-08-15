@@ -1,15 +1,14 @@
 package com.example.limmonica.newsapp;
 
 import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.text.ParseException;
@@ -58,6 +57,7 @@ public class ArticleAdapter extends ArrayAdapter<Article> {
 
         // Get the date string of the current article
         String dateString = currentArticle.getArticleDate();
+
         // Assign to it a date format
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ss'Z'", Locale.getDefault());
         try {
@@ -82,6 +82,13 @@ public class ArticleAdapter extends ArrayAdapter<Article> {
         // Display the section of the current article in that TextView
         sectionView.setText(currentArticle.getArticleSection());
 
+        // Find the Layout which contains the section of the article
+        LinearLayout sectionViewLayout = listItemView.findViewById(R.id.section_layout);
+        // Store the section of the article in a string
+        String sectionTitle = currentArticle.getArticleSection();
+        // Set the appropriate background color of the layout based on the section title
+        sectionViewLayout.setBackgroundColor(getSectionColor(sectionTitle));
+
         // Find the TextView with view ID title_view
         TextView titleView = listItemView.findViewById(R.id.title_view);
         // Display the title of the current article in that TextView
@@ -103,21 +110,6 @@ public class ArticleAdapter extends ArrayAdapter<Article> {
         // Display the trail of the current article in that TextView
         trailView.setText(currentArticle.getArticleTrail());
 
-        // Find the Button with view ID read_more_view
-        Button readView = listItemView.findViewById(R.id.read_more_view);
-        // Set up a click listener
-        readView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                // Convert the String URL into a URI object (to pass into the Intent constructor)
-                Uri articleUri = Uri.parse(currentArticle.getArticleUrl());
-                // Create a new intent to view the earthquake URI
-                Intent readMoreIntent = new Intent(Intent.ACTION_VIEW, articleUri);
-                // Start activity
-                getContext().startActivity(readMoreIntent);
-            }
-        });
-
         // Return the list item view that is now showing the appropriate data
         return listItemView;
     }
@@ -128,5 +120,47 @@ public class ArticleAdapter extends ArrayAdapter<Article> {
     private String formatDate(Date dateObject) {
         SimpleDateFormat dateFormat = new SimpleDateFormat("LLL dd, yyyy", Locale.getDefault());
         return dateFormat.format(dateObject);
+    }
+
+    /**
+     * Returns the color of the background of the layout containing the section of the article
+     *
+     * @param sectionTitle is the title of the section
+     * @return the color
+     */
+    private int getSectionColor(String sectionTitle) {
+
+        int sectionColor;
+
+        switch (sectionTitle) {
+            case "Technology":
+                sectionColor = R.color.technology;
+                break;
+            case "Business":
+                sectionColor = R.color.business;
+                break;
+            case "Politics":
+                sectionColor = R.color.politics;
+                break;
+            case "Australia news":
+                sectionColor = R.color.australia_news;
+                break;
+            case "Media":
+                sectionColor = R.color.media;
+                break;
+            case "Art and design":
+                sectionColor = R.color.art_and_design;
+                break;
+            case "Education":
+                sectionColor = R.color.education;
+                break;
+            case "Opinion":
+                sectionColor = R.color.opinion;
+                break;
+            default:
+                sectionColor = R.color.other;
+                break;
+        }
+        return ContextCompat.getColor(getContext(), sectionColor);
     }
 }

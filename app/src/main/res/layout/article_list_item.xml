@@ -9,6 +9,7 @@
 
     <!-- DATE & SECTION -->
     <LinearLayout
+        android:id="@+id/section_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/colorAccent"
@@ -72,17 +73,4 @@
         android:textSize="14sp"
         tools:text="Hackers could break into voicemail systems, which have had some of the same weaknesses for decades, to access PayPal and WhatsApp accounts" />
 
-    <!-- READ MORE -->
-    <Button
-        android:id="@+id/read_more_view"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/colorAccent"
-        android:text="@string/read_more"
-        android:textAlignment="center"
-        android:textAllCaps="true"
-        android:textColor="@android:color/white"
-        android:textSize="14sp"
-        android:textStyle="bold"
-        tools:text="Read More" />
 </LinearLayout>
