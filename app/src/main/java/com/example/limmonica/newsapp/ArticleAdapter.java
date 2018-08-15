@@ -12,7 +12,11 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.TextView;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * An {@link ArticleAdapter} knows how to create a list item layout for each article in the
@@ -22,6 +26,8 @@ import java.util.List;
  * user.
  */
 public class ArticleAdapter extends ArrayAdapter<Article> {
+
+    private static final String AUTHOR_LABEL = "By ";
 
     /**
      * Constructs a new {@link ArticleAdapter}.
@@ -50,10 +56,26 @@ public class ArticleAdapter extends ArrayAdapter<Article> {
         // Find the article at the given position in the list of articles
         final Article currentArticle = getItem(position);
 
-        // Find the TextView with view ID date_view
-        TextView dateView = listItemView.findViewById(R.id.date_view);
-        // Display the date of the current article in that TextView
-        dateView.setText(currentArticle.getArticleDate());
+        // Get the date string of the current article
+        String dateString = currentArticle.getArticleDate();
+        // Assign to it a date format
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ss'Z'", Locale.getDefault());
+        try {
+            // Parse the date in the given String format
+            Date mDate = dateFormat.parse(dateString);
+            // Get the time in milliseconds from the date
+            long timeInMilliseconds = mDate.getTime();
+            // Create a new Date object from the time in milliseconds of the article
+            Date dateObject = new Date(timeInMilliseconds);
+            // Format the date string (i.e. "Apr 25, 2016")
+            String formattedDate = formatDate(dateObject);
+            // Find the TextView with view ID date_view
+            TextView dateView = listItemView.findViewById(R.id.date_view);
+            // Display the date of the current article in that TextView
+            dateView.setText(formattedDate);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
 
         // Find the TextView with view ID section_view
         TextView sectionView = listItemView.findViewById(R.id.section_view);
@@ -65,10 +87,16 @@ public class ArticleAdapter extends ArrayAdapter<Article> {
         // Display the title of the current article in that TextView
         titleView.setText(currentArticle.getArticleTitle());
 
+        // Get the String with the author name of the article
+        String authorName = currentArticle.getArticleAuthor();
+        // String variable to store the author line
+        String authorLine;
+        // Create the author line by adding "By " before the author name
+        authorLine = AUTHOR_LABEL + authorName;
         // Find the TextView with view ID author_view
         TextView authorView = listItemView.findViewById(R.id.author_view);
         // Display the author of the current article in that TextView
-        authorView.setText(currentArticle.getArticleAuthor());
+        authorView.setText(authorLine);
 
         // Find the TextView with view ID trail_view
         TextView trailView = listItemView.findViewById(R.id.trail_view);
@@ -92,5 +120,13 @@ public class ArticleAdapter extends ArrayAdapter<Article> {
 
         // Return the list item view that is now showing the appropriate data
         return listItemView;
+    }
+
+    /**
+     * Return the formatted date string (i.e. "Mar 3, 1984") from a Date object.
+     */
+    private String formatDate(Date dateObject) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("LLL dd, yyyy", Locale.getDefault());
+        return dateFormat.format(dateObject);
     }
 }
