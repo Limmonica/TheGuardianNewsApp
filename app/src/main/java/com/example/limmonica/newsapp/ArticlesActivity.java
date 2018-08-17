@@ -1,21 +1,31 @@
 package com.example.limmonica.newsapp;
 
+import android.app.LoaderManager;
+import android.content.Context;
 import android.content.Intent;
+import android.content.Loader;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class ArticlesActivity extends AppCompatActivity {
+public class ArticlesActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<List<Article>> {
 
     /**
-     * Sample JSON response for a The Guardian query
+     * Constant value for the earthquake loader ID
+     */
+    private static final int ARTICLE_LOADER_ID = 1;
+
+    /**
+     * JSON response for a The Guardian query
      */
     private static final String GUARDIAN_REQUEST_URL = "https://content.guardianapis.com/search?from-date=2018-08-01&to-date=2018-08-16&show-fields=byline%2CtrailText&q=uk%2Ftechnology&api-key=a42dcdcf-932d-4091-862e-e4328fa79e1d";
 
@@ -24,6 +34,11 @@ public class ArticlesActivity extends AppCompatActivity {
      */
     private ArticleAdapter mAdapter;
 
+    /**
+     * TextView that is displayed when the list is empty
+     */
+    private TextView mEmptyStateTextView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -31,6 +46,11 @@ public class ArticlesActivity extends AppCompatActivity {
 
         // Find a reference to the {@link ListView in the layout
         ListView articleListView = findViewById(R.id.list);
+
+        // Find a reference to the {@link TextView} for the empty state
+        mEmptyStateTextView = findViewById(R.id.empty_view);
+        // Set the empty view
+        articleListView.setEmptyView(mEmptyStateTextView);
 
         // Create a new adapter that takes the list of articles as input
         mAdapter = new ArticleAdapter(this, new ArrayList<Article>());
@@ -60,57 +80,63 @@ public class ArticlesActivity extends AppCompatActivity {
             }
         });
 
-        // Start the AsyncTask to fetch the article data
-        ArticleAsyncTask task = new ArticleAsyncTask();
-        task.execute(GUARDIAN_REQUEST_URL);
+        // Get a reference to the ConnectivityManager to check state of network connectivity
+        ConnectivityManager connMgr = (ConnectivityManager)
+                getSystemService(Context.CONNECTIVITY_SERVICE);
+        // Get details on the currently active default data network
+        assert connMgr != null;
+        NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+        // If there is a network connection, fetch data
+        if (networkInfo != null && networkInfo.isConnected()) {
+
+            // Get a reference to the LoaderManager, in order to interact with loaders.
+            LoaderManager loaderManager = getLoaderManager();
+
+            // Initialize the loader. Pass in the int ID constant defined above and pass in null for
+            // the bundle. Pass in this activity for the LoaderCallbacks parameter (which is valid
+            // because this activity implements the LoaderCallbacks interface).
+
+            loaderManager.initLoader(ARTICLE_LOADER_ID, null, this);
+        } else {
+            // Otherwise, display error
+            // First, hide loading indicator so error message will be visible
+            View loadingIndicator = findViewById(R.id.loading_indicator);
+            loadingIndicator.setVisibility(View.GONE);
+            // Update empty state with no connection error message
+            mEmptyStateTextView.setText(R.string.no_internet_connection);
+        }
     }
 
-    /**
-     * {@link AsyncTask} to perform the network request on a background thread and then update the
-     * UI with the list of articles in the response.
-     */
-    private class ArticleAsyncTask extends AsyncTask<String, Void, List<Article>> {
+    @Override
+    public Loader<List<Article>> onCreateLoader(int i, Bundle bundle) {
+        // Create a new loader for the given URL
+        return new ArticleLoader(this, GUARDIAN_REQUEST_URL);
 
-        /**
-         * This method runs on a background thread and performs the network request and returns a
-         * list of {@link Article}s as the result.
-         *
-         * @param urls are the urls to which the app will connect to get the JSON data
-         * @return a result which is a list of articles
-         */
-        @Override
-        protected List<Article> doInBackground(String... urls) {
+    }
 
-            // Don't perform the request if there are no URLs, or if the first URL is null
-            if (urls.length < 1 || urls[0] == null) {
-                return null;
-            }
+    @Override
+    public void onLoadFinished(Loader<List<Article>> loader, List<Article> articles) {
 
-            // Perform the connection, fetch the data, parse it and store it in a list of articles
-            List<Article> result = QueryUtils.fetchArticleData(urls[0]);
+        // Set empty state text to display "No earthquakes found."
+        mEmptyStateTextView.setText(R.string.no_articles);
 
-            // Return the list of articles
-            return result;
+        // Hide loading indicator because the data has been loaded
+        View loadingIndicator = findViewById(R.id.loading_indicator);
+        loadingIndicator.setVisibility(View.GONE);
+
+        // Clear the adapter of previous article data
+        mAdapter.clear();
+
+        // If there is a valid list of {@link Article}, then add them to the adapter's data set. This will trigger the ListView to update
+        if (articles != null && !articles.isEmpty()) {
+            mAdapter.addAll(articles);
         }
+    }
 
-        /**
-         * This method receives, as input, the return value from the doInBackground() method. First
-         * we clear out the adapter, to get rid of article data from a previous query to USGS.
-         * Then we update the adapter with the new list of article, which will trigger the
-         * ListView to re-populate its list items.
-         *
-         * @param data is a list of articles from the doInBackground() method
-         */
-        @Override
-        protected void onPostExecute(List<Article> data) {
+    @Override
+    public void onLoaderReset(Loader<List<Article>> loader) {
 
-            // Clear the adapter of previous article data
-            mAdapter.clear();
-
-            // If there is a valid list of {@link Article}s, then add them to the adapter's dataset. This will trigger the ListView to update
-            if (data != null && !data.isEmpty()) {
-                mAdapter.addAll(data);
-            }
-        }
+        // Loader reset so we can clear out our existing data
+        mAdapter.clear();
     }
 }
