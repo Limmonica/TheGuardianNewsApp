@@ -44,7 +44,7 @@ public class ArticlesActivity extends AppCompatActivity implements LoaderManager
         super.onCreate(savedInstanceState);
         setContentView(R.layout.article_activity);
 
-        // Find a reference to the {@link ListView in the layout
+        // Find a reference to the {@link ListView} in the layout
         ListView articleListView = findViewById(R.id.list);
 
         // Find a reference to the {@link TextView} for the empty state
