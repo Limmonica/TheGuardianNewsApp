@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
 
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
@@ -6,6 +6,88 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:textColor">@color/colorPrimaryDark</item>
+    </style>
+
+    <!-- Style for the article divider View -->
+    <style name="SeparatorStyle">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/separator_height</item>
+        <item name="android:background">@color/colorAccent</item>
+    </style>
+
+    <!-- Style for the article thumbnail Image View -->
+    <style name="ThumbnailStyle">
+        <item name="android:layout_width">@dimen/empty</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:adjustViewBounds">true</item>
+        <item name="android:scaleType">centerCrop</item>
+    </style>
+
+    <!-- Style for the Linear Layout of the article details -->
+    <style name="DetailsLayoutStyle">
+        <item name="android:layout_width">@dimen/empty</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_weight">3</item>
+        <item name="android:paddingEnd" tools:targetApi="jelly_bean_mr1">@dimen/layout_padding
+        </item>
+        <item name="android:paddingStart" tools:targetApi="jelly_bean_mr1">@dimen/layout_padding
+        </item>
+        <item name="android:orientation">vertical</item>
+    </style>
+
+    <!-- Style for the Linear Layout of the article section and date -->
+    <style name="SectionDateLayout">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:paddingTop">@dimen/section_date_padding</item>
+        <item name="android:paddingBottom">@dimen/section_date_padding</item>
+        <item name="android:orientation">horizontal</item>
+    </style>
+
+    <!-- Style for the article section and date TextViews -->
+    <style name="SectionDateStyle">
+        <item name="android:layout_width">@dimen/empty</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:fontFamily" tools:targetApi="jelly_bean">@font/merriweather_black</item>
+        <item name="android:textSize">@dimen/text_size_details</item>
+    </style>
+
+    <!-- Style for the article title TextView -->
+    <style name="TitleStyle">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:paddingBottom">@dimen/title_padding</item>
+        <item name="android:textAlignment" tools:targetApi="jelly_bean_mr1">center</item>
+        <item name="android:textSize">@dimen/text_size_title</item>
+        <item name="android:fontFamily" tools:targetApi="jelly_bean">@font/merriweather_black</item>
+    </style>
+
+    <!-- Style for the article author TextView -->
+    <style name="AuthorStyle">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:paddingBottom">@dimen/author_padding</item>
+        <item name="android:textColor">@color/colorAccent</item>
+        <item name="android:textSize">@dimen/text_size_details</item>
+        <item name="android:fontFamily" tools:targetApi="jelly_bean">@font/merriweather_bold</item>
+    </style>
+
+    <!-- Style for the article trail TextView -->
+    <style name="TrailStyle">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:paddingBottom">@dimen/trail_padding</item>
+        <item name="android:textAlignment" tools:targetApi="jelly_bean_mr1">center</item>
+        <item name="android:textSize">@dimen/text_size_details</item>
+        <item name="android:fontFamily" tools:targetApi="jelly_bean">@font/merriweather</item>
     </style>
 
 </resources>

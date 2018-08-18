@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="separator_height">4dp</dimen>
+    <dimen name="empty">0dp</dimen>
+    <dimen name="layout_padding">16dp</dimen>
+    <dimen name="section_date_padding">8dp</dimen>
+    <dimen name="text_size_details">14sp</dimen>
+    <dimen name="title_padding">8dp</dimen>
+    <dimen name="text_size_title">20sp</dimen>
+    <dimen name="author_padding">8dp</dimen>
+    <dimen name="trail_padding">8dp</dimen>
+</resources>

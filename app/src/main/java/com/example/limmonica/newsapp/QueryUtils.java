@@ -208,12 +208,15 @@ public final class QueryUtils {
                 // Extract the value for the key called "sectionName"
                 String section = currentArticle.getString("sectionName");
 
-                // Extract the value for the key called "webTitle"
-                String title = currentArticle.getString("webTitle");
+                // Extract the value for the key called "webUrl"
+                String url = currentArticle.getString("webUrl");
 
                 // For a given article, extract the JSONObject associated with the key called
                 // "fields", which represents a list of additional fields for that article
                 JSONObject fields = currentArticle.getJSONObject("fields");
+
+                // Extract the value for the key called "headline"
+                String title = fields.getString("headline");
 
                 // Extract the value for the key called "byline"
                 String author = fields.getString("byline");
@@ -221,11 +224,14 @@ public final class QueryUtils {
                 // Extract the value for the key called "trailText"
                 String trail = fields.getString("trailText");
 
-                // Extract the value for the key called "webUrl"
-                String url = currentArticle.getString("webUrl");
+                String thumbnail = null;
+                if (fields.has("thumbnail")) {
+                    // Extract the value for the key called "thumbnail"
+                    thumbnail = fields.getString("thumbnail");
+                }
 
                 // Create Article java object from: date, section, title, author, trail, and url
-                Article article = new Article(date, section, title, author, trail, url);
+                Article article = new Article(date, section, thumbnail, title, author, trail, url);
 
                 // Add article to list of articles
                 articles.add(article);

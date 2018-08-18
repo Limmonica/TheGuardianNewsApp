@@ -8,6 +8,8 @@
         android:id="@+id/list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:divider="@null"
+        android:dividerHeight="0dp"
         android:orientation="vertical" />
 
     <!-- Empty view is only visible when the list has no items. -->
@@ -18,6 +20,7 @@
         android:layout_centerInParent="true"
         android:textAppearance="?android:textAppearanceMedium" />
 
+    <!-- Progress bar is visible when the content is loading -->
     <ProgressBar
         android:id="@+id/loading_indicator"
         style="@style/Widget.AppCompat.ProgressBar"

@@ -20,14 +20,14 @@ import java.util.List;
 public class ArticlesActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<List<Article>> {
 
     /**
-     * Constant value for the earthquake loader ID
+     * Constant value for the article loader ID
      */
     private static final int ARTICLE_LOADER_ID = 1;
 
     /**
      * JSON response for a The Guardian query
      */
-    private static final String GUARDIAN_REQUEST_URL = "https://content.guardianapis.com/search?from-date=2018-08-01&to-date=2018-08-16&show-fields=byline%2CtrailText&q=uk%2Ftechnology&api-key=a42dcdcf-932d-4091-862e-e4328fa79e1d";
+    private static final String GUARDIAN_REQUEST_URL = "https://content.guardianapis.com/search?from-date=2018-08-01&show-fields=byline%2CtrailText%2Cthumbnail%2Cheadline&order-by=newest&page-size=30&q=technology&api-key=a42dcdcf-932d-4091-862e-e4328fa79e1d";
 
     /**
      * Adapter for the list of articles
@@ -95,7 +95,6 @@ public class ArticlesActivity extends AppCompatActivity implements LoaderManager
             // Initialize the loader. Pass in the int ID constant defined above and pass in null for
             // the bundle. Pass in this activity for the LoaderCallbacks parameter (which is valid
             // because this activity implements the LoaderCallbacks interface).
-
             loaderManager.initLoader(ARTICLE_LOADER_ID, null, this);
         } else {
             // Otherwise, display error
@@ -111,13 +110,12 @@ public class ArticlesActivity extends AppCompatActivity implements LoaderManager
     public Loader<List<Article>> onCreateLoader(int i, Bundle bundle) {
         // Create a new loader for the given URL
         return new ArticleLoader(this, GUARDIAN_REQUEST_URL);
-
     }
 
     @Override
     public void onLoadFinished(Loader<List<Article>> loader, List<Article> articles) {
 
-        // Set empty state text to display "No earthquakes found."
+        // Set empty state text to display "No articles found."
         mEmptyStateTextView.setText(R.string.no_articles);
 
         // Hide loading indicator because the data has been loaded
@@ -127,7 +125,8 @@ public class ArticlesActivity extends AppCompatActivity implements LoaderManager
         // Clear the adapter of previous article data
         mAdapter.clear();
 
-        // If there is a valid list of {@link Article}, then add them to the adapter's data set. This will trigger the ListView to update
+        // If there is a valid list of {@link Article}, then add them to the adapter's data set.
+        // This will trigger the ListView to update
         if (articles != null && !articles.isEmpty()) {
             mAdapter.addAll(articles);
         }

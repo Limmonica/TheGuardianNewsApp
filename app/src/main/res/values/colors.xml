@@ -1,36 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#3F51B5</color>
-    <color name="colorPrimaryDark">#303F9F</color>
-    <color name="colorAccent">#FF4081</color>
-
-    <!-- Color for an earthquake with magnitude 0 and 2 -->
-    <color name="technology">#4A7BA7</color>
-
-    <!-- Magnitude circle color for an earthquake with magnitude between 2 and 3 -->
-    <color name="business">#04B4B3</color>
-
-    <!-- Magnitude circle color for an earthquake with magnitude between 3 and 4 -->
-    <color name="politics">#10CAC9</color>
-
-    <!-- Magnitude circle color for an earthquake with magnitude between 4 and 5 -->
-    <color name="art_and_design">#F5A623</color>
-
-    <!-- Magnitude circle color for an earthquake with magnitude between 5 and 6 -->
-    <color name="australia_news">#FF7D50</color>
-
-    <!-- Magnitude circle color for an earthquake with magnitude between 6 and 7 -->
-    <color name="media">#FC6644</color>
-
-    <!-- Magnitude circle color for an earthquake with magnitude between 7 and 8 -->
-    <color name="education">#E75F40</color>
-
-    <!--&lt;!&ndash; Magnitude circle color for an earthquake with magnitude between 8 and 9 &ndash;&gt;-->
-    <!--<color name="magnitude8">#E13A20</color>-->
-
-    <!-- Magnitude circle color for an earthquake with magnitude between 9 and 10 -->
-    <color name="other">#D93218</color>
-
-    <!-- Magnitude circle color for an earthquake with magnitude over 10 -->
-    <color name="opinion">#C03823</color>
+    <color name="colorPrimary">#000000</color>
+    <color name="colorPrimaryDark">#000000</color>
+    <color name="colorAccent">#c50813</color>
+    <!-- Color for section: News -->
+    <color name="news">#c50813</color>
+    <!-- Color for section: Opinion -->
+    <color name="opinion">#de5e1c</color>
+    <!-- Color for section: Sport -->
+    <color name="sport">#1485c4</color>
+    <!-- Color for section: Culture -->
+    <color name="culture">#a0845f</color>
+    <!-- Color for section: Lifestyle -->
+    <color name="lifestyle">#b93e80</color>
+    <!-- Color for section: Other -->
+    <color name="other">@color/colorPrimary</color>
 </resources>
