@@ -4,11 +4,15 @@ import android.app.LoaderManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.Loader;
+import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
@@ -27,7 +31,8 @@ public class ArticlesActivity extends AppCompatActivity implements LoaderManager
     /**
      * JSON response for a The Guardian query
      */
-    private static final String GUARDIAN_REQUEST_URL = "https://content.guardianapis.com/search?from-date=2018-08-01&show-fields=byline%2CtrailText%2Cthumbnail%2Cheadline&order-by=newest&page-size=30&q=technology&api-key=a42dcdcf-932d-4091-862e-e4328fa79e1d";
+    private static final String GUARDIAN_REQUEST_URL =
+            "https://content.guardianapis.com/search";
 
     /**
      * Adapter for the list of articles
@@ -106,10 +111,72 @@ public class ArticlesActivity extends AppCompatActivity implements LoaderManager
         }
     }
 
+    /**
+     * This method initialize the contents of the Activity's options menu
+     */
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main, menu);
+        return true;
+    }
+
+    /**
+     * This method is called whenever an item in the options menu is selected.
+     * It passes the MenuItem that is selected
+     *
+     * @param item is the item that is selected
+     * @return returns boolean true
+     */
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Returns a unique ID for the menu item defined by the android:id attribute in the
+        // menu resource as action_settings
+        int id = item.getItemId();
+        // Match the ID against known menu items to perform the appropriate action
+        // If the ID matches the action_settings menu item
+        if (id == R.id.action_settings) {
+            // Create an intent to open the Settings Activity
+            Intent settingsIntent = new Intent(this, SettingsActivity.class);
+            // Start Settings Activity
+            startActivity(settingsIntent);
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    // Instantiates and returns a mew loader for the given ID
     @Override
     public Loader<List<Article>> onCreateLoader(int i, Bundle bundle) {
-        // Create a new loader for the given URL
-        return new ArticleLoader(this, GUARDIAN_REQUEST_URL);
+
+        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+
+        // Retrieves a String value from the preferences. The second param is the default value for
+        // this preference
+        String numberArticles = sharedPrefs.getString(
+                getString(R.string.settings_number_articles_key),
+                getString(R.string.settings_number_articles_default)
+        );
+
+        String orderBy = sharedPrefs.getString(
+                getString(R.string.settings_order_by_key),
+                getString(R.string.settings_order_by_default)
+        );
+
+        // Breaks apart the URI string that's passed into its param
+        Uri baseUri = Uri.parse(GUARDIAN_REQUEST_URL);
+
+        // Prepares the baseUri that we just parsed so we can add query params to it
+        Uri.Builder uriBuilder = baseUri.buildUpon();
+
+        // Append query params and its value
+        uriBuilder.appendQueryParameter("from-date", "2018-08-01");
+        uriBuilder.appendQueryParameter("show-fields", "byline,trailText,thumbnail,headline");
+        uriBuilder.appendQueryParameter("order-by", orderBy);
+        uriBuilder.appendQueryParameter("page-size", numberArticles);
+        uriBuilder.appendQueryParameter("q", "technology");
+        uriBuilder.appendQueryParameter("api-key", "a42dcdcf-932d-4091-862e-e4328fa79e1d");
+        // Create a new loader for the completed uri
+        return new ArticleLoader(this, uriBuilder.toString());
     }
 
     @Override
