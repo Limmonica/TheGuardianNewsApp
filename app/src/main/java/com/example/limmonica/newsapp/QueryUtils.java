@@ -23,10 +23,12 @@ import java.util.List;
  */
 public final class QueryUtils {
 
-    /**
-     * Tag for the log messages
-     */
+    // Tag for the log messages
     private static final String LOG_TAG = QueryUtils.class.getSimpleName();
+    // Constant value for the read timeout
+    private static final int READ_TIMEOUT = 10000;
+    // Constant value for the connect timeout
+    private static final int CONNECT_TIMEOUT = 15000;
 
     /**
      * Create a private constructor because no one should ever create a {@link QueryUtils} object.
@@ -80,10 +82,10 @@ public final class QueryUtils {
             urlConnection = (HttpURLConnection) url.openConnection();
 
             // Set a read timeout to 10 seconds
-            urlConnection.setReadTimeout(10000);
+            urlConnection.setReadTimeout(READ_TIMEOUT);
 
             // Set a timeout for the connection to 15 seconds
-            urlConnection.setConnectTimeout(15000);
+            urlConnection.setConnectTimeout(CONNECT_TIMEOUT);
 
             // Set the request method, for when connected to the url, to get/read the data
             urlConnection.setRequestMethod("GET");
@@ -203,31 +205,31 @@ public final class QueryUtils {
                 JSONObject currentArticle = articleArray.getJSONObject(i);
 
                 // Extract the value for the key called "webPublicationDate"
-                String date = currentArticle.getString("webPublicationDate");
+                String date = currentArticle.optString("webPublicationDate");
 
                 // Extract the value for the key called "sectionName"
-                String section = currentArticle.getString("sectionName");
+                String section = currentArticle.optString("sectionName");
 
                 // Extract the value for the key called "webUrl"
-                String url = currentArticle.getString("webUrl");
+                String url = currentArticle.optString("webUrl");
 
                 // For a given article, extract the JSONObject associated with the key called
                 // "fields", which represents a list of additional fields for that article
                 JSONObject fields = currentArticle.getJSONObject("fields");
 
                 // Extract the value for the key called "headline"
-                String title = fields.getString("headline");
+                String title = fields.optString("headline");
 
                 // Extract the value for the key called "byline"
-                String author = fields.getString("byline");
+                String author = fields.optString("byline");
 
                 // Extract the value for the key called "trailText"
-                String trail = fields.getString("trailText");
+                String trail = fields.optString("trailText");
 
                 String thumbnail = null;
                 if (fields.has("thumbnail")) {
                     // Extract the value for the key called "thumbnail"
-                    thumbnail = fields.getString("thumbnail");
+                    thumbnail = fields.optString("thumbnail");
                 }
 
                 // Create Article java object from: date, section, title, author, trail, and url

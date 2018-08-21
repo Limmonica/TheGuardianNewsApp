@@ -1,78 +1,109 @@
 package com.example.limmonica.newsapp;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.os.AsyncTask;
+import android.content.Intent;
+import android.net.Uri;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
+import com.squareup.picasso.Picasso;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 /**
  * An {@link ArticleAdapter} knows how to create a list item layout for each article in the
  * data source (a list of {@link Article} objects).
  * <p>
- * These list item layouts will be provided to an adapter view like ListView to be displayed to the
+ * These list item layouts will be provided to a {@link RecyclerView} to be displayed to the
  * user.
  */
-public class ArticleAdapter extends ArrayAdapter<Article> {
+public class ArticleAdapter extends RecyclerView.Adapter<ArticleAdapter.ArticleViewHolder> {
 
+    // Tag for the log messages
+    private static final String LOG_TAG = ArticleAdapter.class.getSimpleName();
+    // Constant value String for the Author name
     private static final String AUTHOR_LABEL = "by ";
+    // Constant value String for the Section title
     private static final String SECTION_SEP = " / ";
+    // Initialization of the list of articles
+    private List<Article> mArticles;
+    // Initialization of the layout inflater
+    private LayoutInflater mInflater;
+    // Initialization of the context
+    private Context mContext;
 
     /**
-     * Constructs a new {@link ArticleAdapter}.
+     * Creates a new {@link ArticleAdapter}
      *
-     * @param context  of the app
-     * @param articles is the list of articles, which is the data source of the adapter
+     * @param context  is the context
+     * @param articles is the data passed into the constructor
      */
     ArticleAdapter(Context context, List<Article> articles) {
-        super(context, 0, articles);
+        this.mInflater = LayoutInflater.from(context);
+        this.mArticles = articles;
+        this.mContext = context;
     }
 
     /**
-     * Returns a list item view that displays information about the article at the given position
-     * in the list of articles.
+     * Called when {@link RecyclerView} needs a new {@link ArticleViewHolder} of the given
+     * type to represent an item. Constructed with a new View inflated from an XML layout file
+     * that can represent the items of the given type.
+     *
+     * @param parent   is the ViewGroup into which the new View will be added after it is bound to
+     *                 an adapter position.
+     * @param viewType is the view type of the new View
+     * @return a new ViewHolder that holds a View of the given view type
      */
     @NonNull
     @Override
-    public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-        // Check if there is an existing list item view (called convertView) that we can reuse,
-        // otherwise, if convertView is null, then inflate a new list item layout.
-        View listItemView = convertView;
-        if (listItemView == null) {
-            listItemView = LayoutInflater.from(getContext()).inflate(R.layout.article_list_item, parent, false);
-        }
+    public ArticleViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        // Inflates the article_list_item layout file
+        View itemView = mInflater.inflate(R.layout.article_list_item, parent, false);
+        // Returns a new ViewHolder of the inflated xml layout file
+        return new ArticleViewHolder(itemView);
+    }
 
+    /**
+     * Called by {@link RecyclerView} to display the data at the specified position. This method
+     * updates the contents of the itemView to reflect the item at the given position.
+     *
+     * @param holder   is the {@link ArticleViewHolder} which should be updated to represent
+     *                 the contents of the item at the given position in the data set
+     * @param position is he position of the item within the adapter's data set
+     */
+    @Override
+    public void onBindViewHolder(@NonNull ArticleViewHolder holder, int position) {
         // Find the article at the given position in the list of articles
-        final Article currentArticle = getItem(position);
+        Article currentArticle = mArticles.get(position);
 
         // Get the section of the current article and store it into a String
-        assert currentArticle != null;
         String sectionTitle = currentArticle.getArticleSection();
 
-        // Find the View with view ID article_separator
-        View articleSeparator = listItemView.findViewById(R.id.article_separator);
-        // Set the color of the background to the specific color of the section
-        articleSeparator.setBackgroundColor(getSectionColor(sectionTitle));
+        // Set the color of the View background to the specific color of the section
+        holder.separatorView.setBackgroundColor(getSectionColor(sectionTitle));
+
+        // Add a separator " / " to the section text
+        String sectionLine = sectionTitle + SECTION_SEP;
+        // Display the section of the current article in that TextView
+        holder.sectionView.setText(sectionLine);
+        // Set the color of the section text to the specific color of the section
+        holder.sectionView.setTextColor(getSectionColor(sectionTitle));
 
         // Get the date string of the current article
         String dateString = currentArticle.getArticleDate();
@@ -87,43 +118,26 @@ public class ArticleAdapter extends ArrayAdapter<Article> {
             Date dateObject = new Date(timeInMilliseconds);
             // Format the date string (i.e. "Apr 25, 2016")
             String formattedDate = formatDate(dateObject);
-            // Find the TextView with view ID date_view
-            TextView dateView = listItemView.findViewById(R.id.date_view);
             // Display the date of the current article in that TextView
-            dateView.setText(formattedDate);
+            holder.dateView.setText(formattedDate);
         } catch (ParseException e) {
-            e.printStackTrace();
+            Log.v(LOG_TAG, "Problems with parsing the date", e);
         }
 
-        // Find the TextView with view ID section_view
-        TextView sectionView = listItemView.findViewById(R.id.section_view);
-        // Add a separator " / " to the section text
-        String sectionLine = sectionTitle + SECTION_SEP;
-        // Display the section of the current article in that TextView
-        sectionView.setText(sectionLine);
-        // Set the color of the section text to the specific color of the section
-        sectionView.setTextColor(getSectionColor(sectionTitle));
-
-        // Find the ImageView with view ID thumbnail_view
-        ImageView thumbnailView = listItemView.findViewById(R.id.thumbnail_view);
         // If the current article has thumbnail image
         if (currentArticle.hasThumbnail()) {
-            // Download and set the Thumbnail image on the Image View
-            new DownloadImageTask(thumbnailView).execute(currentArticle.getThumbnailUrl());
+            // Load and set the Thumbnail image on the Image View
+            Picasso.get().load(currentArticle.getThumbnailUrl()).into(holder.thumbnailView);
             // Make sure the view is visible
-            thumbnailView.setVisibility(View.VISIBLE);
+            holder.thumbnailView.setVisibility(View.VISIBLE);
         } else {
             // Make sure the view is not visible
-            thumbnailView.setVisibility(View.GONE);
+            holder.thumbnailView.setVisibility(View.GONE);
         }
 
-        // Find the TextView with view ID title_view
-        TextView titleView = listItemView.findViewById(R.id.title_view);
         // Display the title of the current article in that TextView
-        titleView.setText(currentArticle.getArticleTitle());
+        holder.titleView.setText(currentArticle.getArticleTitle());
 
-        // Find the TextView with view ID author_view
-        TextView authorView = listItemView.findViewById(R.id.author_view);
         // Get the String with the author name of the article
         String authorName = currentArticle.getArticleAuthor();
         // Check if an author is provided
@@ -133,31 +147,48 @@ public class ArticleAdapter extends ArrayAdapter<Article> {
             // Create the author line by adding "by " before the author name
             authorLine = AUTHOR_LABEL + authorName;
             // Display the author of the current article in that TextView
-            authorView.setText(authorLine);
+            holder.authorView.setText(authorLine);
             // Set the color of the text to the specific color of the section
-            authorView.setTextColor(getSectionColor(sectionTitle));
+            holder.authorView.setTextColor(getSectionColor((sectionTitle)));
             // Make sure the view is visible
-            authorView.setVisibility(View.VISIBLE);
+            holder.authorView.setVisibility(View.VISIBLE);
         } else {
             // Otherwise hide the TextView
-            authorView.setVisibility(View.GONE);
+            holder.authorView.setVisibility(View.GONE);
         }
 
-        // Find the TextView with view ID trail_view
-        TextView trailView = listItemView.findViewById(R.id.trail_view);
         // Strip the HTML from text and display the trail - a short preview - of the current
         // article in that TextView
-        trailView.setText(Html.fromHtml(currentArticle.getArticleTrail()).toString().replaceAll("\n", "").trim());
+        holder.trailView.setText(Html.fromHtml(currentArticle
+                .getArticleTrail()
+                .replaceAll("\n", "")
+                .trim()));
+    }
 
-        // Return the list item view that is now showing the appropriate data
-        return listItemView;
+    /**
+     * @return the total number of items in the data set held by the adapter
+     */
+    @Override
+    public int getItemCount() {
+        return mArticles.size();
+    }
+
+    /**
+     * Updates the {@link List<Article>}
+     *
+     * @param articles is the list of articles to be added to the data set held by the adapter
+     */
+    public void addAll(List<Article> articles) {
+        mArticles = articles;
     }
 
     /**
      * Return the formatted date string (i.e. "Mar 3, 1984") from a Date object.
      */
     private String formatDate(Date dateObject) {
+        // Create a new pattern of date format
         SimpleDateFormat dateFormat = new SimpleDateFormat("LLL dd, yyyy", Locale.getDefault());
+        // Return the dateObject formatted following the pattern
         return dateFormat.format(dateObject);
     }
 
@@ -169,8 +200,10 @@ public class ArticleAdapter extends ArrayAdapter<Article> {
      */
     private int getSectionColor(String sectionTitle) {
 
+        // Initialization of the variable which will hold the color
         int sectionColor;
 
+        // Assign the colors based on the title of the section
         switch (sectionTitle) {
             case "News":
             case "World news":
@@ -222,51 +255,59 @@ public class ArticleAdapter extends ArrayAdapter<Article> {
                 sectionColor = R.color.other;
                 break;
         }
-        return ContextCompat.getColor(getContext(), sectionColor);
+
+        // Return the color based on the section title
+        return ContextCompat.getColor(mContext, sectionColor);
     }
 
     /**
-     * {@link DownloadImageTask} is an {@link AsyncTask} used to access the thumbnail url, download
-     * the data and decode the stream into a bitmap on a background thread and then update the
-     * UI with the Bitmap image of the article
+     * Base class for {@link ArticleAdapter} which stores and recycles views as they are scrolled
+     * off screen.
      */
-    private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
-
-        // Initialize the ImageView of the article
-        ImageView articleThumbnail;
+    public class ArticleViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+        @BindView(R.id.separator_view)
+        View separatorView;
+        @BindView(R.id.section_view)
+        TextView sectionView;
+        @BindView(R.id.date_view)
+        TextView dateView;
+        @BindView(R.id.thumbnail_view)
+        ImageView thumbnailView;
+        @BindView(R.id.title_view)
+        TextView titleView;
+        @BindView(R.id.author_view)
+        TextView authorView;
+        @BindView(R.id.trail_view)
+        TextView trailView;
 
         /**
-         * Constructs a new {@link DownloadImageTask} object.
+         * Describes an item view and metadata about its place within the RecyclerView.
+         * It subclasses the {@link ArticleViewHolder} and adds fields for caching potentially
+         * expensive findViewById(int) results.
          *
-         * @param articleThumbnail is the ImageView of the article thumbnail which will be returned
-         *                         onPostExecute() based on the result
+         * @param itemView is the {@link View} referenced and represented by
+         *                 this {@link ArticleViewHolder}
          */
-        DownloadImageTask(ImageView articleThumbnail) {
-            this.articleThumbnail = articleThumbnail;
+        ArticleViewHolder(View itemView) {
+            // Calls the parent constructor that accepts 1 parameter of the type View
+            super(itemView);
+            // Binding view
+            ButterKnife.bind(this, itemView);
+            // Set a click listener on the view
+            itemView.setOnClickListener(this);
         }
 
+        // Sets the Intent behavior when the item is clicked
         @Override
-        protected Bitmap doInBackground(String... urls) {
-            String urlDisplay = urls[0];
-            Bitmap mImage = null;
-            try {
-                // Open the stream for the url of the thumbnail
-                InputStream incoming = new URL(urlDisplay).openStream();
-                // Decode the incoming stream and store it into a Bitmap
-                mImage = BitmapFactory.decodeStream(incoming);
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            // Return the Bitmap image
-            return mImage;
-        }
-
-        @Override
-        protected void onPostExecute(Bitmap result) {
-            // Set the result(ed) Bitmap image in the article ImageView
-            articleThumbnail.setImageBitmap(result);
+        public void onClick(View view) {
+            // Find the current layout that was clicked on
+            Article currentArticle = mArticles.get(getLayoutPosition());
+            // Convert the String Url into a Uri object (to pass into the Intent constructor)
+            Uri articleUri = Uri.parse(currentArticle.getArticleUrl());
+            // Create a new intent to view the article Uri
+            Intent websiteIntent = new Intent(Intent.ACTION_VIEW, articleUri);
+            // Set the intent to launch a new activity
+            mContext.startActivity(websiteIntent);
         }
     }
 }

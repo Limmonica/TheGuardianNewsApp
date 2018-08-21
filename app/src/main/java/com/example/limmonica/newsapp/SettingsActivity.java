@@ -26,11 +26,11 @@ public class SettingsActivity extends AppCompatActivity {
             Preference numberArticles = findPreference(getString(R.string.settings_number_articles_key));
             // Get the "Order by" Preference object according to its key
             Preference orderBy = findPreference(getString(R.string.settings_order_by_key));
-            // Bind the value that's in SharedPreferences to what will show up in the preference summary
+            // Bind the value that's in SharedPreferences to what will show up
+            // in the preference summary
             bindPreferenceSummaryToValue(numberArticles);
             bindPreferenceSummaryToValue(orderBy);
         }
-
 
         /**
          * Binds the value stored in SharedPreferences to the value displayed in the Preference
@@ -58,8 +58,11 @@ public class SettingsActivity extends AppCompatActivity {
          */
         @Override
         public boolean onPreferenceChange(Preference preference, Object value) {
+            // Store the value provided by the user into a String
             String stringValue = value.toString();
+            // If the preference is changed in the list type
             if (preference instanceof ListPreference) {
+                // Update the list preference summary
                 ListPreference listPreference = (ListPreference) preference;
                 int prefIndex = listPreference.findIndexOfValue(stringValue);
                 if (prefIndex >= 0) {
@@ -67,6 +70,7 @@ public class SettingsActivity extends AppCompatActivity {
                     preference.setSummary(labels[prefIndex]);
                 }
             } else {
+                // Otherwise update the editText type of preference
                 preference.setSummary(stringValue);
             }
             return true;

@@ -3,12 +3,12 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:orientation="vertical">
 
     <!-- ARTICLE SEPARATOR -->
     <View
-        android:id="@+id/article_separator"
+        android:id="@+id/separator_view"
         style="@style/SeparatorStyle" />
 
     <!-- THUMBNAIL, SECTION, DATE, TITLE, AUTHOR, TRAIL -->

@@ -10,80 +10,68 @@ import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class ArticlesActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<List<Article>> {
+public class ArticlesActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<List<Article>>, SwipeRefreshLayout.OnRefreshListener {
 
-    /**
-     * Constant value for the article loader ID
-     */
+    //Constant value for the article loader ID
     private static final int ARTICLE_LOADER_ID = 1;
 
-    /**
-     * JSON response for a The Guardian query
-     */
+    //JSON response for a The Guardian query
     private static final String GUARDIAN_REQUEST_URL =
             "https://content.guardianapis.com/search";
 
-    /**
-     * Adapter for the list of articles
-     */
+    // Create a new list of articles
+    private final List<Article> articleList = new ArrayList<>();
+    // Get a reference to the LoaderManager
+    LoaderManager loaderManager = getLoaderManager();
+    // Get a reference to the ArticleAdapter
     private ArticleAdapter mAdapter;
-
-    /**
-     * TextView that is displayed when the list is empty
-     */
+    // Get a reference to the TextView used to display when there is no article
     private TextView mEmptyStateTextView;
+    // Get a reference to the RecyclerView View
+    private RecyclerView mRecyclerView;
+    // Get a reference to the SwipeRefreshLayout
+    private SwipeRefreshLayout swipeLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.article_activity);
 
-        // Find a reference to the {@link ListView} in the layout
-        ListView articleListView = findViewById(R.id.list);
+        // Set a swipe refresh layout
+        swipeLayout = findViewById(R.id.swipe_container);
+        // Set the color resources used in the progress animation from color resources
+        swipeLayout.setColorSchemeResources(
+                R.color.news,
+                R.color.opinion,
+                R.color.sport,
+                R.color.culture,
+                R.color.lifestyle);
+        // Set a refresh listener of the swipe refresh layout
+        swipeLayout.setOnRefreshListener(this);
+
+        // Find a reference to the {@link RecyclerView} in the layout
+        mRecyclerView = findViewById(R.id.list);
+        // Set layout manager
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        // Create a new adapter
+        mAdapter = new ArticleAdapter(this, articleList);
+        // Set the adapter on the recycler view so the list can be populated in the user interface
+        mRecyclerView.setAdapter(mAdapter);
 
         // Find a reference to the {@link TextView} for the empty state
         mEmptyStateTextView = findViewById(R.id.empty_view);
-        // Set the empty view
-        articleListView.setEmptyView(mEmptyStateTextView);
-
-        // Create a new adapter that takes the list of articles as input
-        mAdapter = new ArticleAdapter(this, new ArrayList<Article>());
-
-        // Set the adapter on the {@link ListView} so the list can be populated
-        // in the user interface
-        articleListView.setAdapter(mAdapter);
-
-        // Set an item click listener of the ListView, which sends an intent to a web browser to
-        // open a website with more info about the selected article
-        articleListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-
-                // Find the current article that was clicked on
-                Article currentArticle = mAdapter.getItem(position);
-
-                // Convert the String Url into a Uri object (to pass into the Intent constructor)
-                assert currentArticle != null;
-                Uri articleUri = Uri.parse(currentArticle.getArticleUrl());
-
-                // Create a new intent to view the article Uri
-                Intent websiteIntent = new Intent(Intent.ACTION_VIEW, articleUri);
-
-                // Set the intent to launch a new activity
-                startActivity(websiteIntent);
-            }
-        });
 
         // Get a reference to the ConnectivityManager to check state of network connectivity
         ConnectivityManager connMgr = (ConnectivityManager)
@@ -93,18 +81,13 @@ public class ArticlesActivity extends AppCompatActivity implements LoaderManager
         NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
         // If there is a network connection, fetch data
         if (networkInfo != null && networkInfo.isConnected()) {
-
-            // Get a reference to the LoaderManager, in order to interact with loaders.
-            LoaderManager loaderManager = getLoaderManager();
-
-            // Initialize the loader. Pass in the int ID constant defined above and pass in null for
-            // the bundle. Pass in this activity for the LoaderCallbacks parameter (which is valid
-            // because this activity implements the LoaderCallbacks interface).
+            // Initialize the loader
             loaderManager.initLoader(ARTICLE_LOADER_ID, null, this);
         } else {
-            // Otherwise, display error
-            // First, hide loading indicator so error message will be visible
+            // Otherwise, display error:
+            // Find the loading indicator
             View loadingIndicator = findViewById(R.id.loading_indicator);
+            // Set its visibility to gone
             loadingIndicator.setVisibility(View.GONE);
             // Update empty state with no connection error message
             mEmptyStateTextView.setText(R.string.no_internet_connection);
@@ -148,6 +131,7 @@ public class ArticlesActivity extends AppCompatActivity implements LoaderManager
     @Override
     public Loader<List<Article>> onCreateLoader(int i, Bundle bundle) {
 
+        // Get the preferences
         SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
 
         // Retrieves a String value from the preferences. The second param is the default value for
@@ -168,13 +152,14 @@ public class ArticlesActivity extends AppCompatActivity implements LoaderManager
         // Prepares the baseUri that we just parsed so we can add query params to it
         Uri.Builder uriBuilder = baseUri.buildUpon();
 
+        String apiKey = BuildConfig.THE_GUARDIAN_API_KEY;
         // Append query params and its value
         uriBuilder.appendQueryParameter("from-date", "2018-08-01");
         uriBuilder.appendQueryParameter("show-fields", "byline,trailText,thumbnail,headline");
         uriBuilder.appendQueryParameter("order-by", orderBy);
         uriBuilder.appendQueryParameter("page-size", numberArticles);
         uriBuilder.appendQueryParameter("q", "technology");
-        uriBuilder.appendQueryParameter("api-key", "a42dcdcf-932d-4091-862e-e4328fa79e1d");
+        uriBuilder.appendQueryParameter("api-key", apiKey);
         // Create a new loader for the completed uri
         return new ArticleLoader(this, uriBuilder.toString());
     }
@@ -182,27 +167,47 @@ public class ArticlesActivity extends AppCompatActivity implements LoaderManager
     @Override
     public void onLoadFinished(Loader<List<Article>> loader, List<Article> articles) {
 
-        // Set empty state text to display "No articles found."
-        mEmptyStateTextView.setText(R.string.no_articles);
-
-        // Hide loading indicator because the data has been loaded
+        // Find the loading indicator
         View loadingIndicator = findViewById(R.id.loading_indicator);
+        // Hide loading indicator because the data has been loaded
         loadingIndicator.setVisibility(View.GONE);
 
-        // Clear the adapter of previous article data
-        mAdapter.clear();
-
-        // If there is a valid list of {@link Article}, then add them to the adapter's data set.
-        // This will trigger the ListView to update
+        // If there is a list of articles
         if (articles != null && !articles.isEmpty()) {
+            // Update the adapter
             mAdapter.addAll(articles);
+            // Notify the RecyclerView
+            mAdapter.notifyDataSetChanged();
+            // Make the list visible
+            mRecyclerView.setVisibility(View.VISIBLE);
+            // Hide the empty state
+            mEmptyStateTextView.setVisibility(View.GONE);
+            // Notify swipeRefreshLayout that the refresh has finished
+            swipeLayout.post(new Runnable() {
+                @Override
+                public void run() {
+                    swipeLayout.setRefreshing(false);
+                }
+            });
+        } else {
+            // Otherwise, hide the list
+            mRecyclerView.setVisibility(View.GONE);
+            // Make the empty state visible
+            mEmptyStateTextView.setVisibility(View.VISIBLE);
+            // Set it to display "No articles found."
+            mEmptyStateTextView.setText(R.string.no_articles);
         }
     }
 
     @Override
     public void onLoaderReset(Loader<List<Article>> loader) {
+        mRecyclerView.removeAllViewsInLayout();
+    }
 
-        // Loader reset so we can clear out our existing data
-        mAdapter.clear();
+    @Override
+    public void onRefresh() {
+        // Re-create the Loader. If there is currently a Loader associated with this ID,
+        // it will be canceled/stopped/destroyed.
+        loaderManager.restartLoader(ARTICLE_LOADER_ID, null, this);
     }
 }
