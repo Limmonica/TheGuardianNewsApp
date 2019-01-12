@@ -18,6 +18,11 @@ Create a News Feed app which gives a user regularly-updated news from the intern
 * When there is no data to display, the app shows a default TextView that informs the user how to populate the list.
 * The app checks whether the device is connected to the internet and responds appropriately. The result of the request is validated to account for a bad server response or lack of server response.
 * Networking operations are done using a Loader rather than an AsyncTask.
+* Settings Activity allows users to see the value of all the preferences right below the preference name, and when the value is changed, the summary updates immediate.
+* Settings Activity is accessed from the Main Activity via a Navigation Drawer or from the toolbar menu.
+
+## Optional:
+* Implemented RecyclerView, ButterKnife, Picasso, SwipeRefresh Layout
 
 <img src="https://github.com/Limmonica/TheGuardianNewsApp/blob/master/Udacity_NewsApp_P1.png"  width="250" height=""> <img src="https://github.com/Limmonica/TheGuardianNewsApp/blob/master/Udacity_NewsApp_L1.png"  width="500" height="">
 <img src="https://github.com/Limmonica/TheGuardianNewsApp/blob/master/Udacity_NewsApp_Settings1.png"  width="250" height=""> <img src="https://github.com/Limmonica/TheGuardianNewsApp/blob/master/Udacity_NewsApp_Settings2.png"  width="250" height=""> <img src="https://github.com/Limmonica/TheGuardianNewsApp/blob/master/Udacity_NewsApp_Settings3.png"  width="250" height="">
